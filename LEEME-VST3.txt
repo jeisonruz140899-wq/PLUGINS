@@ -1,0 +1,12 @@
+CÓMO OBTENER LOS .vst3 SIN INSTALAR NADA (GitHub Actions, gratis)
+
+1. Crea una cuenta gratis en github.com y un repositorio nuevo (New repository), por ejemplo "silk".
+2. Sube TODO el contenido de esta carpeta (Source, tests, CMakeLists.txt...) con
+   "Add file > Upload files".
+3. Crea el archivo del flujo: "Add file > Create new file", escribe exactamente
+   .github/workflows/build.yml
+   y pega dentro el contenido de build-windows.yml. Haz Commit.
+4. Pestaña "Actions": se ejecuta solo (tarda ~10-15 min). Si no, entra al flujo y pulsa "Run workflow".
+5. Al terminar, abre la ejecución y descarga "SilkVST3-Windows" (abajo, en Artifacts).
+6. Descomprime y copia SilkHeat.vst3 y SilkSat.vst3 a  C:\Program Files\Common Files\VST3\
+7. Ableton: Preferencias > Plug-ins > activa "Usar carpetas de plug-ins VST3" y Rescan.
