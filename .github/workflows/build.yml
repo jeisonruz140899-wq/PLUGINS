@@ -1,4 +1,3 @@
-
 name: Build VST3 (Windows)
 on:
   push:
@@ -16,21 +15,33 @@ jobs:
           if (-not $cm) { Write-Host "::error::No encuentro CMakeLists.txt del proyecto. Sube CMakeLists.txt y la carpeta Source al repositorio."; exit 1 }
           "SRC=$($cm.DirectoryName)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
           Write-Host "Proyecto en: $($cm.DirectoryName)"
+          $vsw = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          if (Test-Path $vsw) { & $vsw -all -products * -property displayName }
+          cmake --version
 
       - name: Configure
         shell: pwsh
-        run: cmake -S "$env:SRC" -B "$env:SRC/build" -G "Visual Studio 17 2022" -A x64
+        run: |
+          $ok = $false
+          foreach ($g in @("Visual Studio 18 2026", "Visual Studio 17 2022")) {
+            if (Test-Path "$env:SRC/build") { Remove-Item -Recurse -Force "$env:SRC/build" }
+            Write-Host "Probando generador: $g"
+            cmake -S "$env:SRC" -B "$env:SRC/build" -G $g -A x64
+            if ($LASTEXITCODE -eq 0) { $ok = $true; break }
+          }
+          if (-not $ok) { Write-Host "::error::No se pudo configurar con ninguna version de Visual Studio"; exit 1 }
 
       - name: Build
         shell: pwsh
-        run: cmake --build "$env:SRC/build" --config Release --target SilkHeat_VST3 SilkSat_VST3 --parallel
+        run: cmake --build "$env:SRC/build" --config Release --target SilkHeat_VST3 SilkSat_VST3 SilkClip_VST3 SilkSoothe_VST3 --parallel
 
       - name: Package
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force out | Out-Null
-          Copy-Item -Recurse "$env:SRC/build/SilkHeat_artefacts/Release/VST3/SilkHeat.vst3" out/
-          Copy-Item -Recurse "$env:SRC/build/SilkSat_artefacts/Release/VST3/SilkSat.vst3" out/
+          foreach ($n in @("SilkHeat", "SilkSat", "SilkClip", "SilkSoothe")) {
+            Copy-Item -Recurse "$env:SRC/build/${n}_artefacts/Release/VST3/$n.vst3" out/
+          }
 
       - uses: actions/upload-artifact@v4
         with:
