@@ -70,3 +70,11 @@ juce_add_console_app(SilkHeatTest PRODUCT_NAME "SilkHeatTest")
 target_sources(SilkHeatTest PRIVATE tests/TestHeat.cpp Source/Heat/HeatProcessor.cpp Source/Heat/HeatEditor.cpp)
 target_compile_definitions(SilkHeatTest PRIVATE SILKSAT_TEST_BUILD=1 JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0)
 target_link_libraries(SilkHeatTest PRIVATE juce::juce_audio_utils juce::juce_dsp PUBLIC juce::juce_recommended_config_flags)
+
+# Captura de las interfaces (revisión visual en Linux)
+juce_add_console_app(SilkShot PRODUCT_NAME "SilkShot")
+target_sources(SilkShot PRIVATE tests/Shot.cpp
+    Source/PluginProcessor.cpp Source/PluginEditor.cpp
+    Source/Heat/HeatProcessor.cpp Source/Heat/HeatEditor.cpp)
+target_compile_definitions(SilkShot PRIVATE SILKSAT_TEST_BUILD=1 JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0)
+target_link_libraries(SilkShot PRIVATE juce::juce_audio_utils juce::juce_dsp PUBLIC juce::juce_recommended_config_flags)
